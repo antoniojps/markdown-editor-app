@@ -187,12 +187,6 @@ function openDir() {
   })
 
   if (!directory) return
-  const dirPath = directory[0]
-  fs.readdir(dirPath, (err, files) => {
-    const filteredFiles = files.filter(file => file.includes('.md'))
-    const filePaths = filteredFiles.map(
-      markdownFile => `${dirPath}/${markdownFile}`
-    )
-    mainWindow.webContents.send('new-dir', filePaths, dirPath)
-  })
+  const dir = directory[0]
+  mainWindow.webContents.send('new-dir', dir)
 }

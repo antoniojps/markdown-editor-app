@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "brace": "^0.11.1",
+    "electron-react-devtools": "^0.5.3",
     "electron-settings": "^3.2.0",
     "markdown-to-jsx": "^6.9.4",
     "react": "^16.8.6",
