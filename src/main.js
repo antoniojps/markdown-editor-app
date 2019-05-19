@@ -43,12 +43,9 @@ function createWindow() {
       label: 'File',
       submenu: [
         {
-          label: 'Open Folder'
-        },
-        {
-          label: 'Open File',
+          label: 'Open Folder',
           accelerator: 'CommandOrControl+O',
-          click: openFile
+          click: openDir
         }
       ]
     },
@@ -181,4 +178,21 @@ function openFile() {
   const file = files[0]
   const fileContent = fs.readFileSync(file).toString()
   mainWindow.webContents.send('new-file', fileContent)
+}
+
+// Open Folder
+function openDir() {
+  const directory = dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory']
+  })
+
+  if (!directory) return
+  const dirPath = directory[0]
+  fs.readdir(dirPath, (err, files) => {
+    const filteredFiles = files.filter(file => file.includes('.md'))
+    const filePaths = filteredFiles.map(
+      markdownFile => `${dirPath}/${markdownFile}`
+    )
+    mainWindow.webContents.send('new-dir', filePaths, dirPath)
+  })
 }

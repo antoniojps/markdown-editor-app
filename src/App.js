@@ -7,35 +7,45 @@ import 'brace/theme/dracula'
 import './App.css'
 
 const { ipcRenderer } = window.require('electron')
+const settings = window.require('electron-settings')
 
 function App() {
   // equivelant of code in the constructor
   const ref = useRef(false)
   const [file, setFile] = useState('')
+  const [directory, setDirectory] = useState(settings.get('directory') || null)
   if (!ref.current) {
     // code that we only want to run once before render
-    ipcRenderer.on('new-file', (event, fileContent) => {
-      setFile(fileContent)
+    ipcRenderer.on('new-dir', (event, filePaths, directory) => {
+      setDirectory(directory)
+      settings.set('directory', directory)
+    })
+    ipcRenderer.on('new-file', (event, file) => {
+      setFile(file)
     })
     ref.current = true
   }
   return (
     <div className="App">
       <Header>UA Markdown Editor</Header>
-      <LayoutSplit>
-        <CodeWindow>
-          <AceEditor
-            mode="markdown"
-            theme="dracula"
-            onChange={newFile => setFile(newFile)}
-            name="markdown-editor"
-            value={file}
-          />
-        </CodeWindow>
-        <RenderedWindow>
-          <Markdown>{file}</Markdown>
-        </RenderedWindow>
-      </LayoutSplit>
+      {directory ? (
+        <LayoutSplit>
+          <CodeWindow>
+            <AceEditor
+              mode="markdown"
+              theme="dracula"
+              onChange={newFile => setFile(newFile)}
+              name="markdown-editor"
+              value={file}
+            />
+          </CodeWindow>
+          <RenderedWindow>
+            <Markdown>{file}</Markdown>
+          </RenderedWindow>
+        </LayoutSplit>
+      ) : (
+        <h1>No directory</h1>
+      )}
     </div>
   )
 }
